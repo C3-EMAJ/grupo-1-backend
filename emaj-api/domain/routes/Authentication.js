@@ -7,7 +7,6 @@ const User = require("../models/User")
 
 router.post('/login', async (req, res) => {
     try{
-        console.log(req.body)
         if (!req.body || !req.body.email || !req.body.password) {
             return res.status(400).json({ error: "Campos 'email' e 'password' são obrigatórios." });
         }
@@ -27,6 +26,7 @@ router.post('/login', async (req, res) => {
         const accessToken = jwt.sign(
         {
             id: user.id,
+            isAdmin: user.isAdmin,
             typeUser: user.typeUser,
         },
             process.env.JWT_SECURITY_PASS,

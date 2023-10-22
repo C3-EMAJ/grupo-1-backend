@@ -59,13 +59,12 @@ router.get("/find/:id", verifyTokenAndAuthorization, async (req, res) => {
 })
 
 // Pegar todos os usuários:
-router.get("/find-all", verifyTokenAndAuthorization, async (req, res) => {
+router.get("/find-all", verifyTokenAndAdmin, async (req, res) => {
     try {
         const users = await User.findAll();
-  
         const sanitizedUsers = users.map(user => {
-            const { password, updatedAt, ...others } = user.toJSON();
-            return others;
+          const { password, updatedAt, ...others } = user.toJSON();
+          return others;
         });
 
         res.status(200).json(sanitizedUsers);
