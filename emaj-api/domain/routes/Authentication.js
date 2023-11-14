@@ -33,9 +33,11 @@ router.post('/login', async (req, res) => {
             {expiresIn:"3d"}
         );
 
+        
         const userJson = JSON.parse(JSON.stringify(user.dataValues));
         const { password, ...others } = userJson;
-
+        
+        console.log({ ...others, accessToken })
         res.status(200).json({ ...others, accessToken });
     
     } catch(error){
@@ -44,7 +46,8 @@ router.post('/login', async (req, res) => {
 
 });
 
-router.post("/reset-password", async (req, res) => {
+// Mudar a senha de um usuário:
+router.post("/modify-password", async (req, res) => {
     try {
         if(req.body.password) {
             var encryptedPassword = CryptoJS.AES.encrypt(
@@ -52,18 +55,33 @@ router.post("/reset-password", async (req, res) => {
                 process.env.CRYPTO_SECURITY_PASS
             ).toString();
         }
-
+  
         let updatedUser = await User.update(
             { password: encryptedPassword },
             { where: { email: req.body.email } }
           );
-
+  
         if (updatedUser) {
-          res.status(200).json("Password reseted!");
+          res.status(200).json("Password modified!");
         }
       } catch (err) {
         res.status(500).json(err);
       } 
-    });
+});
+
+router.post("/check-email", async (req, res) => {
+    try{
+        const email = await User.findOne({ where: { email: req.body.email }  });
+        if (email) {
+            return res.status(200).json();
+        }
+        res.status(201).json();
+
+    } catch (err) {
+        console.log(err)
+        res.status(500).json(err);
+    }
+       
+});
 
 module.exports = router;
