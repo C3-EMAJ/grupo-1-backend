@@ -6,8 +6,9 @@ const db = require('./infra/database/db.js');
 
 // Importando as rotas que serão usadas (endpoints) //
 const AuthRoute = require("./domain/routes/Authentication.js");
-const UsersRoute = require("./domain/routes/Users.js")
 const EmailRoute = require("./domain/routes/Email.js")
+const UsersRoute = require("./domain/routes/Users.js");
+const ActivityRoute = require("./domain/routes/ActivityLog.js");
 //
 
 // Instanciando o Express:
@@ -21,8 +22,9 @@ server.use(express.json());
 
 // Fazendo o server usar as rotas importadas: //
 server.use("/emaj-api/auth", AuthRoute);
-server.use("/emaj-api/users", UsersRoute);
 server.use("/emaj-api/email", EmailRoute);  
+server.use("/emaj-api/users", UsersRoute);  
+server.use("/emaj-api/activity", ActivityRoute);
 //
 
 //{force:true}

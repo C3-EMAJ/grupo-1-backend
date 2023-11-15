@@ -1,6 +1,7 @@
 const { DataTypes } = require('sequelize');
 
-const db = require('../../infra/database/db.js')
+const db = require('../../../infra/database/db.js');
+const UserActivity = require('./UserActivity.js');
 
 const User = db.define('Users', {
     id: {
@@ -40,4 +41,8 @@ const User = db.define('Users', {
     timestamps: true,
 });
   
+// Relacionando o usuário com as suas atividades:
+UserActivity.belongsTo(User, { constraint: true, foreignKey: 'idActivity' });
+User.hasMany(UserActivity, { foreignKey: 'idUser', onDelete: 'CASCADE', hooks: true  });
+
 module.exports = User;

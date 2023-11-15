@@ -3,7 +3,7 @@ const router = require("express").Router();
 const CryptoJS = require("crypto-js");
 const jwt = require("jsonwebtoken");
 
-const User = require("../models/User")
+const User = require("../models/user/User")
 
 router.post('/login', async (req, res) => {
     try{
