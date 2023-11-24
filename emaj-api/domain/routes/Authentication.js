@@ -14,6 +14,10 @@ router.post('/login', async (req, res) => {
         const user = await User.findOne({ where: { email: req.body.email }  });
         if (!user) {
             return res.status(204).json({ error: "Credenciais incorretas. Verifique seu email e senha." });
+        } 
+        
+        if (user.isActive == false) {
+            return res.status(205).json({ error: "Usuário desativado!." });
         }
 
         const hashedPassword = CryptoJS.AES.decrypt(user.password, process.env.CRYPTO_SECURITY_PASS);
@@ -31,13 +35,11 @@ router.post('/login', async (req, res) => {
         },
             process.env.JWT_SECURITY_PASS,
             {expiresIn:"3d"}
-        );
+        ); 
 
-        
         const userJson = JSON.parse(JSON.stringify(user.dataValues));
         const { password, ...others } = userJson;
         
-        console.log({ ...others, accessToken })
         res.status(200).json({ ...others, accessToken });
     
     } catch(error){
