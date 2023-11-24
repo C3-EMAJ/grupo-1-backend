@@ -1,13 +1,15 @@
 const router = require("express").Router();
+const { Sequelize } = require('sequelize');
 const {verifyTokenAndAuthorization, verifyTokenAndAdmin} = require("../../infra/security/tokenJWT");
 
 const CryptoJS = require("crypto-js");
 
 const User = require('../models/user/User')
-const UserActivity = require('../models/user/UserActivity')
+const UserActivity = require('../models/user/UserActivity');
+const UserImage = require("../models/user/UserImage");
 
 // Adicionar um novo usuário:
-router.post("/add", async (req, res) => {
+router.post("/add-user", async (req, res) => {
   try {
       let newUser = {
           name: req.body.name,
@@ -18,16 +20,20 @@ router.post("/add", async (req, res) => {
           process.env.CRYPTO_SECURITY_PASS
           ).toString(),
           
-          type: req.body.type,
+          type: req.body.type,  
           isAdmin: req.body.isAdmin
       };
 
       await User.create(newUser);
 
-      res.status(201).json();
-    } catch (err) {
-      console.log(err)
-      res.status(500).json(err);
+      res.status(200).json();
+    } catch (error) {
+      if (error instanceof Sequelize.UniqueConstraintError) {
+        // O e-mail já existe:
+        res.status(204).json({ error: 'E-mail já está em uso.' });
+      } else {
+        res.status(500).json({ error: 'Erro interno do servidor.' });
+      }
     }
 
 });
@@ -45,16 +51,58 @@ router.delete("/delete/:id", verifyTokenAndAdmin, async (req, res) => {
   }
 })
 
+// Desativar um usuário:
+router.put("/deactivate/:id", async (req, res) => {
+  try {
+    const userDisabled = await User.update({isActive: false}, {
+      where: {
+        id: req.params.id
+      }
+    });
+    if (userDisabled) {
+      res.status(200).json(userDisabled);
+    }
+    else {
+      res.status(201).json("Something went wrong!");
+    }
+
+  } catch (err) {
+    res.status(500).json(err);
+  }
+})
+
+// Ativar um usuário:
+router.put("/activate/:id",  async (req, res) => {
+  try {
+    const userActivated = await User.update({isActive: true}, {
+      where: {
+        id: req.params.id
+      }
+    });
+    if (userActivated) {
+      res.status(200).json(userActivated);
+    }
+    else {
+      res.status(201).json("Something went wrong!");
+    }
+
+  } catch (err) {
+    res.status(500).json(err);
+  }
+})
+
 // Achar um usuário pelo id:
 router.get("/find/:id", async (req, res) => {
-  console.log(req.params.id)
-  
   try {
     const user = await User.findByPk(req.params.id, { 
       include: [
         {
           model: UserActivity,
           attributes: ['action', 'createdAt'],
+        },
+        {
+          model: UserImage,
+          attributes: ['url'],
         },
       ], } );
 
@@ -76,7 +124,14 @@ router.get("/find-all", async (req, res) => {
           model: UserActivity,
           attributes: ['action', 'createdAt'],
         },
-      ]
+        {
+          model: UserImage,
+          attributes: ['url'],
+        },
+      ],
+      order: [
+        ['id', 'ASC'],
+      ],
     })
 
     const sanitizedUsers = users.map(user => {
@@ -87,22 +142,21 @@ router.get("/find-all", async (req, res) => {
     res.status(200).json(sanitizedUsers);
 
   } catch (error) {
-    console.log(error)
-    res.status(500).json({ error: errorMessage });
+    res.status(500).json(error);
   }
 })
 
 // Atualizar um usuário:
 router.put("/update/:id", verifyTokenAndAdmin, async (req, res) => {
   try {
-    await Product.update(req.body, {
+    await User.update(req.body, {
       where: {
         id: req.params.id
       }
     });
-    const updatedProduct = await Product.findByPk(req.params.id);
-    res.status(200).json(updatedProduct);
+    res.status(200).json();
   } catch (err) {
+    console.log(err)
     res.status(500).json(err);
   }
 });
