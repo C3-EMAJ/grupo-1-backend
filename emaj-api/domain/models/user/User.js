@@ -2,6 +2,7 @@ const { DataTypes } = require('sequelize');
 
 const db = require('../../../infra/database/db.js');
 const UserActivity = require('./UserActivity.js');
+const UserImage = require('./UserImage.js');
 
 const User = db.define('Users', {
     id: {
@@ -31,18 +32,24 @@ const User = db.define('Users', {
       allowNull: true,
       defaultValue: false,
     },
-    img: {
-        type: DataTypes.STRING(700),
-        allowNull: true,
-        defaultValue: null
+    isActive: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      defaultValue: true,
     },
-    
+
     },{
     timestamps: true,
 });
-  
+
 // Relacionando o usuário com as suas atividades:
 UserActivity.belongsTo(User, { constraint: true, foreignKey: 'idActivity' });
 User.hasMany(UserActivity, { foreignKey: 'idUser', onDelete: 'CASCADE', hooks: true  });
+//
+
+// Relacionando o usuário com a sua imagem:
+UserImage.belongsTo(User, { constraint: true, foreignKey: 'idImage' });
+User.hasOne(UserImage, { foreignKey: 'idUser', onDelete: 'CASCADE', hooks: true  });
+//
 
 module.exports = User;
