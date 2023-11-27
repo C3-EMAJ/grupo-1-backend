@@ -41,16 +41,18 @@ server.use("/emaj-api/upload", UploadRoute);
 
 // Fazendo o server deixar público os diretórios onde fazemos o upload: 
 server.use(
-    "/user-files",
-    express.static(path.resolve(__dirname, "..", "tmp", "uploads", "user-images"))
+  "/user-files",
+  express.static(path.resolve(__dirname, ".", "tmp", "uploads"))
 );
+
 server.use(
-    "/client-files",
-    express.static(path.resolve(__dirname, "..", "tmp", "uploads", "client-documents"))
+  "/client-files",
+  express.static(path.resolve(__dirname, ".", "tmp", "uploads", "client-documents"))
 );
+
 server.use(
-    "/demand-files",
-    express.static(path.resolve(__dirname, "..", "tmp", "uploads", "demand-documents"))
+  "/demand-files",
+  express.static(path.resolve(__dirname, ".", "tmp", "uploads", "demand-documents"))
 );
 //
 
