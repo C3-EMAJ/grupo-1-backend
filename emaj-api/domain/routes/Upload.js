@@ -1,6 +1,18 @@
 const router = require("express").Router();
 const multer = require("multer");
 
+const { S3 } = require("@aws-sdk/client-s3");
+const fs = require("fs");
+const path = require("path");
+const { promisify } = require("util");
+
+const AWS_S3 = new S3({
+  region: process.env.AWS_DEFAULT_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+},});
+
 const {verifyTokenAndAuthorization, verifyTokenAndAdmin} = require("../../infra/security/tokenJWT");
 
 const UserImage = require('../models/user/UserImage')
@@ -8,21 +20,27 @@ const UserImage = require('../models/user/UserImage')
 const multerUser = require('../../infra/multer/userImages')
 
 // Adicionar uma nova foto ao usuário:
-router.post("/user-image", multer(multerUser).single("file"), async (req, res) => {
+router.put("/user-image/:id", multer(multerUser).single("file"), async (req, res) => {
   try{
-    const { originalname: name, size, key, location: url = "" } = req.file;
-    
-    const userImage = await UserImage.create({
+    var { originalname: name, size, key, type, location: url = "" } = req.file;
+
+    if (process.env.STORAGE_TYPE == "LOCAL_STORAGE" && !req.file.url) {
+      url = `${process.env.APP_URL}/user-files/${key}`;
+    }
+
+    const userImage = await UserImage.update({
       name,
       size,
       key,
       url,
-      idUser: req.params.id,
-    });
+      type,
+    },{
+    where: {
+      idUser: req.params.id
+    },});
     
     res.status(200).json(userImage)
   } catch (error) {
-    console.log(error)
     res.status(500).json(error)
   }
 });
@@ -30,40 +48,41 @@ router.post("/user-image", multer(multerUser).single("file"), async (req, res) =
 // Deletando a foto de um usuário:
 router.delete("/user-image/:id", async (req, res) => {
   try {
-    let deleteUserImage = await UserImage.destroy({ where: { id: req.params.id } });
-      if (deleteUserImage) {
-          return res.status(200).json();
-      }
-    } catch (error) {
-      res.status(500).json(error);
-  }
-});
 
-// Editar a foto de um usuário:
-router.put("/user-image", async (req, res) => {
-  console.log(req.content)
-  try{
-    multer(multerUser).single("file")
+    let userImage = await UserImage.findOne({where: {idUser: req.params.id}})
+    
+    if (userImage.type == "AWS") {
+      const resp = await 
 
-    const { originalname: name, size, key, location: url = "" } = req.file;
+                    AWS_S3.deleteObject(
+                      {
+                        Bucket: process.env.AWS_BUCKET_NAME,
+                        Key: userImage.key
+                      })
+
+      console.log(resp)
+    } 
     
-    const userImage = await UserImage.update(
-      {
-        name,
-        size,
-        key,
-        url,
-        idUser: req.params.id,
-      },
-    
-      {
-        where: {id: req.content.id}
-      }
+    else if (userImage.type == "LOCAL") {
+        promisify(fs.unlink)(  
+          path.resolve(__dirname, "..", "..", "tmp", "uploads", userImage.key)
+        );
+    }
+
+    const updatedImage = await UserImage.update({ name: null, size: null, key: null,
+      url:"https://i.imgur.com/oYEFKb1.png",
+      type:null
+    },{
+      where: {
+        idUser: req.params.id
+      },}
     );
-    
-    res.status(200).json(userImage)
+
+    if (updatedImage) {
+      res.status(200).json(updatedImage)
+    }
+
   } catch (error) {
-    console.log(error)
     res.status(500).json(error)
   }
 });
