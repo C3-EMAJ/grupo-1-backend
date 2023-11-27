@@ -40,6 +40,14 @@ const User = db.define('Users', {
 
     },{
     timestamps: true,
+
+    hooks: {
+      afterCreate: async (user, options) => {
+          // Criando uma nova UserImage sempre que criamos um novo usuário:
+          await UserImage.create({ idUser: user.id });
+          //
+        }
+    }
 });
 
 // Relacionando o usuário com as suas atividades:
