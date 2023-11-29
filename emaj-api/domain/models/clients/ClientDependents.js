@@ -13,16 +13,11 @@ const ClientDependents = db.define('ClientDependents', {
         allowNull: false,
     },
     age: {
-        type: DataTypes.INT,
+        type: DataTypes.INTEGER,
         allowNull: false,
-    },
-    cpf: {
-        type: DataTypes.INT,
-        allowNull: true,
-    },
-
+    }
 },{
     timestamps: true,
 });
 
-module.exports = UserActivity;
+module.exports = ClientDependents;

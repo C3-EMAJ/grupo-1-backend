@@ -2,7 +2,7 @@ const { DataTypes } = require('sequelize');
 
 const db = require('../../../infra/database/db.js');
 
-const ClientSocioeconomicInformation = require("./ClienSocioeconomicInformation.js")
+const ClientSocioeconomicInformation = require("./ClientSocioeconomicInformation.js")
 const ClientAddress = require("./ClientAddress.js")
 const ClientContact = require("./ClientContact.js")
 const ClientDependents = require("./ClientDependents.js")
@@ -18,21 +18,17 @@ const Client = db.define('Clients', {
         allowNull: false,
       },
     rg: {
-        type: DataTypes.INT(20),
+        type: DataTypes.STRING(20),
         allowNull: false,
         unique: true,
     },
     cpf: {
-      type: DataTypes.INT(15),
+      type: DataTypes.STRING(15),
       allowNull: false,
     },
     birthday: {
         type: DataTypes.DATE,
         allowNull: false,
-    },
-    age: {
-      type: DataTypes.INT(3),
-      allowNull: false,
     },
     isActive: {
       type: DataTypes.BOOLEAN,

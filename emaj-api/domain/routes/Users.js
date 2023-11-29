@@ -114,7 +114,7 @@ router.get("/find/:id", async (req, res) => {
     }
 })
 
-// Pegar todos os usuários:
+// Pegar todos os usuários e todos os seu dados:
 router.get("/find-all", async (req, res) => {
   
   try {
@@ -133,7 +133,7 @@ router.get("/find-all", async (req, res) => {
         ['id', 'ASC'],
       ],
     })
-
+    console.log(users)
     const sanitizedUsers = users.map(user => {
       const { password, updatedAt, ...others } = user.toJSON();
       return others;

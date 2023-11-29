@@ -9,6 +9,7 @@ const db = require('./infra/database/db.js');
 const AuthRoute = require("./domain/routes/Authentication.js");
 const EmailRoute = require("./domain/routes/Email.js")
 const UsersRoute = require("./domain/routes/Users.js");
+const ClientsRoute = require("./domain/routes/Clients.js");
 const ActivityRoute = require("./domain/routes/ActivityLog.js");
 const UploadRoute = require("./domain/routes/Upload.js")
 //
@@ -37,6 +38,7 @@ server.use("/emaj-api/email", EmailRoute);
 server.use("/emaj-api/users", UsersRoute);  
 server.use("/emaj-api/activity", ActivityRoute);
 server.use("/emaj-api/upload", UploadRoute);
+server.use("/emaj-api/clients", ClientsRoute)
 //
 
 // Fazendo o server deixar público os diretórios onde fazemos o upload: 
@@ -52,7 +54,6 @@ server.use(
     "/demand-files",
     express.static(path.resolve(__dirname, "..", "tmp", "uploads", "demand-documents"))
 );
-//
 
 //{force:true}
 db.sync().then(() => {
