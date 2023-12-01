@@ -9,7 +9,7 @@ const ClientAddress = db.define('ClientAddress', {
         autoIncrement: true,
       },
     cep: {
-        type: DataTypes.INT,
+        type: DataTypes.STRING(15),
         allowNull: false,
     },
     street: {
@@ -17,7 +17,7 @@ const ClientAddress = db.define('ClientAddress', {
         allowNull: false,
     },
     number: {
-        type: DataTypes.INT,
+        type: DataTypes.INTEGER,
         allowNull: false,
     },
     complement: {

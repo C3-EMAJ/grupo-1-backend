@@ -8,10 +8,6 @@ const CientSocioeconomicInformation = db.define('CientSocioeconomicInformation',
         primaryKey: true,
         autoIncrement: true,
       },
-    income: {
-        type: DataTypes.FLOAT,
-        allowNull: false,
-    },
     familyIncome: {
         type: DataTypes.FLOAT,
         allowNull: true,
