@@ -12,6 +12,7 @@ const EmailRoute = require("./domain/routes/Email.js")
 const UsersRoute = require("./domain/routes/Users.js");
 const ActivityRoute = require("./domain/routes/ActivityLog.js");
 const UploadRoute = require("./domain/routes/Upload.js")
+const DemandsRoute = require("./domain/routes/Demands.js")
 //
 
 // Instanciando o Express:
@@ -38,19 +39,15 @@ server.get('/ping', (req, res) => {
 });
 
 if (process.env.APP_PING !== undefined && process.env.APP_PING !== '') {
-  cron.schedule('*/1 * * * *', () => {
+  cron.schedule('*/10 * * * *', () => {
     const http = require('http');
     const options = {
       hostname: process.env.APP_PING,
-      port: process.env.PORT,
       path: '/ping',
       method: 'GET',
     };
   
-    const req = http.request(options, (res) => {
-      console.log(`pingCode: ${res.statusCode}`);
-    });
-  
+    const req = http.request(options);
     req.on('error', (error) => {
       console.error("pingError:",error);
     });
@@ -66,6 +63,7 @@ server.use("/emaj-api/email", EmailRoute);
 server.use("/emaj-api/users", UsersRoute);  
 server.use("/emaj-api/activity", ActivityRoute);
 server.use("/emaj-api/upload", UploadRoute);
+server.use("/emaj-api/demands", DemandsRoute);
 //
 
 // Fazendo o server deixar público os diretórios onde fazemos o upload: 
