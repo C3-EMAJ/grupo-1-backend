@@ -4,6 +4,7 @@ const CryptoJS = require("crypto-js");
 const jwt = require("jsonwebtoken");
 
 const User = require("../models/user/User")
+const UserImage = require("../models/user/UserImage");
 
 router.post('/login', async (req, res) => {
     try{
@@ -11,7 +12,13 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ error: "Campos 'email' e 'password' são obrigatórios." });
         }
   
-        const user = await User.findOne({ where: { email: req.body.email }  });
+        const user = await User.findOne({ where: { email: req.body.email }, 
+            include: [{
+                model: UserImage,
+                attributes: ['url'],
+            }],
+        });
+
         if (!user) {
             return res.status(204).json({ error: "Credenciais incorretas. Verifique seu email e senha." });
         } 
@@ -26,7 +33,7 @@ router.post('/login', async (req, res) => {
         if (originalPassword !== req.body.password) {
             return res.status(204).json({ error: "Credenciais incorretas. Verifique seu email e senha." });
         }
-
+        
         const accessToken = jwt.sign(
         {
             id: user.id,
@@ -34,7 +41,7 @@ router.post('/login', async (req, res) => {
             typeUser: user.typeUser,
         },
             process.env.JWT_SECURITY_PASS,
-            {expiresIn:"3d"}
+            {expiresIn:"300d"}
         ); 
 
         const userJson = JSON.parse(JSON.stringify(user.dataValues));
@@ -43,6 +50,7 @@ router.post('/login', async (req, res) => {
         res.status(200).json({ ...others, accessToken });
     
     } catch(error){
+        console.log(error)
         res.status(500).json(error);
     }
 
@@ -71,6 +79,7 @@ router.post("/modify-password", async (req, res) => {
       } 
 });
 
+// Checando se existe um usuário com um determinado email:
 router.post("/check-email", async (req, res) => {
     try{
         const email = await User.findOne({ where: { email: req.body.email }  });

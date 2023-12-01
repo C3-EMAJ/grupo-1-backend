@@ -105,7 +105,7 @@ router.get("/find/:id", async (req, res) => {
           attributes: ['url'],
         },
       ], } );
-
+      
       const { password, ...others } = user.toJSON();
       res.status(200).json(others);
 
@@ -114,9 +114,43 @@ router.get("/find/:id", async (req, res) => {
     }
 })
 
+// Pegar um usuário que foi recém atualizado incluindo um TokenJWT (para mudar o usuário logado):
+router.get("/find-updated/:id", async (req, res) => {
+  try {
+    const user = await User.findByPk(req.params.id, { 
+      include: [
+        {
+          model: UserActivity,
+          attributes: ['action', 'createdAt'],
+        },
+        {
+          model: UserImage,
+          attributes: ['url'],
+        },
+      ], 
+    });
+
+    const accessToken = jwt.sign(
+    {
+      id: user.id,
+      isAdmin: user.isAdmin,
+      typeUser: user.typeUser,
+    },
+      process.env.JWT_SECURITY_PASS,
+      {expiresIn:"5d"}
+    ); 
+
+    const userJson = JSON.parse(JSON.stringify(user.dataValues));
+    const { password, ...others } = userJson;
+    res.status(200).json({ ...others, accessToken });
+      
+    } catch (error) {
+      res.status(500).json(error);
+    }
+})
+
 // Pegar todos os usuários e todos os seu dados:
 router.get("/find-all", async (req, res) => {
-  
   try {
     const users = await User.findAll({   
       include: [
@@ -156,10 +190,8 @@ router.put("/update/:id", verifyTokenAndAdmin, async (req, res) => {
     });
     res.status(200).json();
   } catch (err) {
-    console.log(err)
     res.status(500).json(err);
   }
 });
-
 
 module.exports = router;
