@@ -2,13 +2,6 @@ const { DataTypes } = require('sequelize');
 
 const db = require('../../../infra/database/db.js');
 
-const aws = require("aws-sdk");
-const fs = require("fs");
-const path = require("path");
-const { promisify } = require("util");
-
-const s3 = new aws.S3();
-
 const UserImage = db.define('UserImage', {
   id: {
       type: DataTypes.INTEGER,
