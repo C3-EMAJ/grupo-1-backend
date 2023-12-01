@@ -25,10 +25,19 @@ const Client = db.define('Clients', {
     cpf: {
       type: DataTypes.STRING(15),
       allowNull: false,
+      unique: true
     },
     birthday: {
         type: DataTypes.DATE,
         allowNull: false,
+    },
+    familiar: {
+      type: DataTypes.STRING(150),
+      allowNull: true,
+    },
+    representativeId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
     },
     isActive: {
       type: DataTypes.BOOLEAN,

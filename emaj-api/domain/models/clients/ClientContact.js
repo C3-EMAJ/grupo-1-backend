@@ -9,11 +9,11 @@ const ClientContact = db.define('ClientContact', {
         autoIncrement: true,
       },
     phone: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING(12),
         allowNull: true,
     },
     phoneTwo: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING(12),
         allowNull: true,
     },
     email: {

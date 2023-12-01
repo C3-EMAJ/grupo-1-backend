@@ -46,6 +46,7 @@ server.use(
     "/user-files",
     express.static(path.resolve(__dirname, "..", "tmp", "uploads", "user-images"))
 );
+
 server.use(
     "/client-files",
     express.static(path.resolve(__dirname, "..", "tmp", "uploads", "client-documents"))
@@ -56,7 +57,7 @@ server.use(
 );
 
 //{force:true}
-db.sync().then(() => {
+db.sync({force:true}).then(() => {
     server.listen(process.env.PORT)
     console.log(`Server running at: http://localhost:${process.env.PORT}`);
 }).catch(err => console.log(err))
