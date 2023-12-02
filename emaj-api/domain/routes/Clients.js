@@ -87,5 +87,44 @@ router.get("/find-all", async (req, res) => {
   }
 });
 
+// Desativar um assistido:
+router.put("/deactivate/:id", async (req, res) => {
+  try {
+    const clientDisabled = await Client.update({isActive: false}, {
+      where: {
+        id: req.params.id
+      }
+    });
+    if (clientDisabled) {
+      res.status(200).json(clientDisabled);
+    }
+    else {
+      res.status(201).json("Something went wrong!");
+    }
+
+  } catch (err) {
+    res.status(500).json(err);
+  }
+})
+
+// Ativar um assistido:
+router.put("/activate/:id",  async (req, res) => {
+  try {
+    const clientActivated = await Client.update({isActive: true}, {
+      where: {
+        id: req.params.id
+      }
+    });
+    if (clientActivated) {
+      res.status(200).json(clientActivated);
+    }
+    else {
+      res.status(201).json("Something went wrong!");
+    }
+
+  } catch (err) {
+    res.status(500).json(err);
+  }
+})
   
 module.exports = router;
