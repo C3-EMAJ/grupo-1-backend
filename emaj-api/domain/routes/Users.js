@@ -180,7 +180,7 @@ router.get("/find-all", async (req, res) => {
   }
 })
 
-// Atualizar um usuário:
+// Atualizar um assistido:
 router.put("/update/:id", verifyTokenAndAdmin, async (req, res) => {
   try {
     await User.update(req.body, {
