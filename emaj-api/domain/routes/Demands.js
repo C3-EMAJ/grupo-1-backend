@@ -2,23 +2,35 @@ const router = require("express").Router();
 const { Sequelize } = require('sequelize');
 const {verifyTokenAndAuthorization, verifyTokenAndAdmin} = require("../../infra/security/tokenJWT");
 
-const CryptoJS = require("crypto-js");
-
 const Demand = require("../models/demands/Demand");
 const DemandDocument = require("../models/demands/DemandDocument");
-const Client = require("../models/clients/Cient");
+const Client = require("../models/clients/Client");
 const User = require("../models/user/User");
 
 // Adicionar uma nova demanda:
 router.post("/add-demand", async (req, res) => {
   try {
-      let newDemand = {
-          number: req.body.email,
-          office: req.body.name,
-          subject: req.body.email,
-          status: req.body.email,
-          summary: req.body.email,
+
+      if (req.body.number === "" || req.body.number === null) {
+        var newDemand = {
+          office: req.body.office,
+          subject: req.body.subject,
+          status: req.body.status,
+          summary: req.body.summary,
+          isActive: req.body.isActive
+        };
+      } else {
+
+        var newDemand = {
+          number: req.body.number,
+          office: req.body.office,
+          subject: req.body.subject,
+          status: req.body.status,
+          summary: req.body.summary,
+          isActive: req.body.isActive
       };
+
+      }
 
       await Demand.create(newDemand);
 
@@ -102,7 +114,6 @@ router.get("/find/:id", async (req, res) => {
         },
         {
             model: DemandDocument,
-            attributes: ['url'],
         },
       ], } );
 
@@ -113,7 +124,7 @@ router.get("/find/:id", async (req, res) => {
     }
 })
 
-// Pegar todos os usuários:
+// Pegar todas as demandas:
 router.get("/find-all", async (req, res) => {
   try {
     const demands = await Demand.findAll({   
@@ -126,7 +137,6 @@ router.get("/find-all", async (req, res) => {
         },
         {
             model: DemandDocument,
-            attributes: ['url'],
         },
       ],
       order: [
@@ -141,7 +151,7 @@ router.get("/find-all", async (req, res) => {
   }
 })
 
-// Atualizar um usuário:
+// Atualizar uma demanda:
 router.put("/update/:id", verifyTokenAndAdmin, async (req, res) => {
   try {
     await Demand.update(req.body, {
@@ -151,6 +161,42 @@ router.put("/update/:id", verifyTokenAndAdmin, async (req, res) => {
     });
     res.status(200).json();
   } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
+// Adicionar um novo usuário a demanda:
+router.post("/add-user", async (req, res) => {
+  try {
+    const user = await User.findByPk(req.body.idUser);
+    const demand = await Demand.findByPk(req.body.idDemand);
+    
+    await demand.setUsers(user)
+
+    res.status(200).json();
+  } catch (err) {
+    console.log(err)
+    res.status(500).json(err);
+  }
+});
+
+// Adicionar um novo usuário a demanda:
+router.put("/remove-user", async (req, res) => {
+  try {
+    const user = await User.findByPk(req.body.idUser);
+    const demand = await Demand.findByPk(req.body.idDemand);
+
+    // Verificando se o usuário e a demanda existem
+    if (!user || !demand) {
+      return res.status(404).json({ error: "Usuário ou demanda não encontrados." });
+    }
+    //
+
+    await demand.removeUsers(user);
+
+    res.status(200).json();
+  } catch (err) {
+    console.log(err)
     res.status(500).json(err);
   }
 });
