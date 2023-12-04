@@ -1,7 +1,8 @@
 const { DataTypes } = require('sequelize');
 
 const db = require('../../../infra/database/db.js');
-const Client = require('../clients/Cient.js');
+
+const Client = require('../clients/Client.js');
 const DemandClient = require('./DemandClient.js');
 const DemandDocument = require('./DemandDocument.js');
 const User = require('../user/User.js');
@@ -31,7 +32,7 @@ const Demand = db.define('Demands', {
         allowNull: false,
     },
     summary: {
-        type: DataTypes.STRING(300),
+        type: DataTypes.STRING(800),
         allowNull: true,
     },
     isActive: {

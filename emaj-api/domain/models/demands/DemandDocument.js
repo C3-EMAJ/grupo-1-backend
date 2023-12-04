@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 
-const db = require('../../../infra/database/db.js');
+const db = require('../../../infra/database/db')
 
 const DemandDocument = db.define('DemandDocument', {
   id: {
