@@ -171,7 +171,7 @@ router.post("/add-user", async (req, res) => {
     const user = await User.findByPk(req.body.idUser);
     const demand = await Demand.findByPk(req.body.idDemand);
     
-    await demand.setUsers(user)
+    await demand.addUsers(user);
 
     res.status(200).json();
   } catch (err) {
@@ -206,7 +206,7 @@ router.post("/add-client", async (req, res) => {
     const client = await Client.findByPk(req.body.idClient);
     const demand = await Demand.findByPk(req.body.idDemand);
     
-    await demand.setUsers(client)
+    await demand.addUsers(client);
 
     res.status(200).json();
   } catch (err) {
