@@ -175,12 +175,11 @@ router.post("/add-user", async (req, res) => {
 
     res.status(200).json();
   } catch (err) {
-    console.log(err)
     res.status(500).json(err);
   }
 });
 
-// Adicionar um novo usuário a demanda:
+// Removendo um novo usuário da demanda:
 router.put("/remove-user", async (req, res) => {
   try {
     const user = await User.findByPk(req.body.idUser);
@@ -196,7 +195,41 @@ router.put("/remove-user", async (req, res) => {
 
     res.status(200).json();
   } catch (err) {
-    console.log(err)
+    res.status(500).json(err);
+  }
+});
+
+
+// Adicionar um novo usuário a demanda:
+router.post("/add-client", async (req, res) => {
+  try {
+    const client = await Client.findByPk(req.body.idClient);
+    const demand = await Demand.findByPk(req.body.idDemand);
+    
+    await demand.setUsers(client)
+
+    res.status(200).json();
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
+// Adicionar um novo usuário a demanda:
+router.put("/remove-client", async (req, res) => {
+  try {
+    const client = await Client.findByPk(req.body.idClient);
+    const demand = await Demand.findByPk(req.body.idDemand);
+
+    // Verificando se o usuário e a demanda existem
+    if (!client || !demand) {
+      return res.status(404).json({ error: "Usuário ou demanda não encontrados." });
+    }
+    //
+
+    await demand.removeClients(client);
+
+    res.status(200).json();
+  } catch (err) {
     res.status(500).json(err);
   }
 });
