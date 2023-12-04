@@ -115,7 +115,7 @@ router.post("/demand-document/:id", multer(multerDemand).single("file"), async (
 });
 
 // Deletando um documento de uma demanda:
-router.delete("/demand-document", async (req, res) => {
+router.put("/demand-document", async (req, res) => {
   try {
 
     let deletedDocument = await DemandDocument.destroy({ where: { id: req.body.id } });
