@@ -2,10 +2,11 @@ const { DataTypes } = require('sequelize');
 
 const db = require('../../../infra/database/db.js');
 
-const ClientSocioeconomicInformation = require("./ClienSocioeconomicInformation.js")
+const ClientSocioeconomicInformation = require("./ClientSocioeconomicInformation.js")
 const ClientAddress = require("./ClientAddress.js")
 const ClientContact = require("./ClientContact.js")
 const ClientDependents = require("./ClientDependents.js")
+const ClientDocument = require("./ClientDocument.js")
 
 const Client = db.define('Clients', {
     id: {
@@ -18,21 +19,22 @@ const Client = db.define('Clients', {
         allowNull: false,
       },
     rg: {
-        type: DataTypes.INT(20),
+        type: DataTypes.STRING(20),
         allowNull: false,
         unique: true,
     },
     cpf: {
-      type: DataTypes.INT(15),
+      type: DataTypes.STRING(15),
       allowNull: false,
+      unique: true
     },
     birthday: {
         type: DataTypes.DATE,
         allowNull: false,
     },
-    age: {
-      type: DataTypes.INT(3),
-      allowNull: false,
+    representativeId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
     },
     isActive: {
       type: DataTypes.BOOLEAN,
@@ -61,6 +63,11 @@ Client.hasOne(ClientContact, { foreignKey: 'idClient', onDelete: 'CASCADE', hook
 // Relacionando o cliente com seus dependentes:
 ClientDependents.belongsTo(Client, { constraint: true, foreignKey: 'idDependents' });
 Client.hasOne(ClientDependents, { foreignKey: 'idClient', onDelete: 'CASCADE', hooks: true  });
+//
+
+// Relacionando o cliente com os seus documentos:
+ClientDocument.belongsTo(Client, { constraint: true, foreignKey: 'idDocument' });
+Client.hasMany(ClientDocument, { foreignKey: 'idClient', onDelete: 'CASCADE', hooks: true  });
 //
 
 module.exports = Client;

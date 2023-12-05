@@ -1,8 +1,8 @@
 const { DataTypes } = require('sequelize');
 
-const db = require('../../../infra/database/db.js');
+const db = require('../../../infra/database/db')
 
-const UserImage = db.define('UserImage', {
+const DemandDocument = db.define('DemandDocument', {
   id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -23,7 +23,6 @@ const UserImage = db.define('UserImage', {
   url: {
       type: DataTypes.STRING(500),
       allowNull: true,
-      defaultValue: "https://i.imgur.com/oYEFKb1.png",
   },
   type:{
     type: DataTypes.STRING(10),
@@ -33,4 +32,4 @@ const UserImage = db.define('UserImage', {
     timestamps: true,
 });
 
-module.exports = UserImage;
+module.exports = DemandDocument;

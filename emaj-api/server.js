@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require("path");
 
+const User = require('./domain/models/user/User.js');
 const cron = require('node-cron');
 const db = require('./infra/database/db.js');
 
@@ -10,8 +11,10 @@ const db = require('./infra/database/db.js');
 const AuthRoute = require("./domain/routes/Authentication.js");
 const EmailRoute = require("./domain/routes/Email.js")
 const UsersRoute = require("./domain/routes/Users.js");
+const ClientsRoute = require("./domain/routes/Clients.js");
 const ActivityRoute = require("./domain/routes/ActivityLog.js");
 const UploadRoute = require("./domain/routes/Upload.js")
+const DemandsRoute = require("./domain/routes/Demands.js");
 //
 
 // Instanciando o Express:
@@ -32,32 +35,19 @@ server.use((req, res, next) => {
 });
 //
 
-// Adicionando um "ping" no servidor que acontece a cada 10 minutos para o servidor que está no Render não fique inativo:
-server.get('/ping', (req, res) => {
-  res.sendStatus(200);
-});
+// Pingando o servidor para evitar a inatividade:
+const pingServer = async () => {
+  try {
+    const ping = await User.findByPk(1);
+    if (ping) {
+      console.log("Pinguei!");
+    } 
+  } catch (error) {
+    console.error("Erro ao pingar o servidor:", error);
+  }
+};
 
-if (process.env.APP_PING !== undefined && process.env.APP_PING !== '') {
-  cron.schedule('*/1 * * * *', () => {
-    const http = require('http');
-    const options = {
-      hostname: process.env.APP_PING,
-      port: process.env.PORT,
-      path: '/ping',
-      method: 'GET',
-    };
-  
-    const req = http.request(options, (res) => {
-      console.log(`pingCode: ${res.statusCode}`);
-    });
-  
-    req.on('error', (error) => {
-      console.error("pingError:",error);
-    });
-  
-    req.end();
-  });
-}
+cron.schedule('*/10 * * * *', pingServer);
 //
 
 // Fazendo o server usar as rotas importadas: 
@@ -66,6 +56,8 @@ server.use("/emaj-api/email", EmailRoute);
 server.use("/emaj-api/users", UsersRoute);  
 server.use("/emaj-api/activity", ActivityRoute);
 server.use("/emaj-api/upload", UploadRoute);
+server.use("/emaj-api/demands", DemandsRoute);
+server.use("/emaj-api/clients", ClientsRoute);
 //
 
 // Fazendo o server deixar público os diretórios onde fazemos o upload: 
@@ -83,7 +75,6 @@ server.use(
   "/demand-files",
   express.static(path.resolve(__dirname, ".", "tmp", "uploads"))
 );
-//
 
 //{force:true}
 db.sync().then(() => {

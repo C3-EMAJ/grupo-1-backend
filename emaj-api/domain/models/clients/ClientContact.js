@@ -9,19 +9,19 @@ const ClientContact = db.define('ClientContact', {
         autoIncrement: true,
       },
     phone: {
-        type: DataTypes.INT,
-        allowNull: false,
+        type: DataTypes.STRING(12),
+        allowNull: true,
     },
     phoneTwo: {
-        type: DataTypes.INT,
+        type: DataTypes.STRING(12),
         allowNull: true,
     },
     email: {
         type: DataTypes.STRING(100),
-        allowNull: false,
+        allowNull: true,
     },
 },{
     timestamps: true,
 });
 
-module.exports = UserActivity;
+module.exports = ClientContact;
