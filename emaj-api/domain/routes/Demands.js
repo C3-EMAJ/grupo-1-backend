@@ -206,7 +206,7 @@ router.post("/add-client", async (req, res) => {
     const client = await Client.findByPk(req.body.idClient);
     const demand = await Demand.findByPk(req.body.idDemand);
     
-    await demand.addUsers(client);
+    await demand.addClients(client);
 
     res.status(200).json();
   } catch (err) {
