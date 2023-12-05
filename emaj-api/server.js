@@ -13,7 +13,8 @@ const UsersRoute = require("./domain/routes/Users.js");
 const ClientsRoute = require("./domain/routes/Clients.js");
 const ActivityRoute = require("./domain/routes/ActivityLog.js");
 const UploadRoute = require("./domain/routes/Upload.js")
-const DemandsRoute = require("./domain/routes/Demands.js")
+const DemandsRoute = require("./domain/routes/Demands.js");
+const User = require('./domain/models/user/User.js');
 //
 
 // Instanciando o Express:
@@ -34,28 +35,19 @@ server.use((req, res, next) => {
 });
 //
 
-// Adicionando um "ping" no servidor que acontece a cada 10 minutos para o servidor que está no Render não fique inativo:
-server.get('/ping', (req, res) => {
-  res.sendStatus(200);
-});
+// Pingando o servidor para evitar a inatividade:
+const pingServer = async () => {
+  try {
+    const ping = await User.findByPk(1);
+    if (ping) {
+      console.log("Pinguei!");
+    } 
+  } catch (error) {
+    console.error("Erro ao pingar o servidor:", error);
+  }
+};
 
-if (process.env.APP_PING !== undefined && process.env.APP_PING !== '') {
-  cron.schedule('*/10 * * * *', () => {
-    const http = require('http');
-    const options = {
-      hostname: process.env.APP_PING,
-      path: '/ping',
-      method: 'GET',
-    };
-  
-    const req = http.request(options);
-    req.on('error', (error) => {
-      console.error("pingError:",error);
-    });
-  
-    req.end();
-  });
-}
+cron.schedule('*/10 * * * *', pingServer);
 //
 
 // Fazendo o server usar as rotas importadas: 
