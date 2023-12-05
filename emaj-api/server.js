@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require("path");
 
+const User = require('./domain/models/user/User.js');
 const cron = require('node-cron');
 const db = require('./infra/database/db.js');
 
@@ -14,7 +15,6 @@ const ClientsRoute = require("./domain/routes/Clients.js");
 const ActivityRoute = require("./domain/routes/ActivityLog.js");
 const UploadRoute = require("./domain/routes/Upload.js")
 const DemandsRoute = require("./domain/routes/Demands.js");
-const User = require('./domain/models/user/User.js');
 //
 
 // Instanciando o Express:
