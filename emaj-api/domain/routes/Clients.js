@@ -67,26 +67,23 @@ router.post("/add-client", async (req, res) => {
     }
 });
 
+
+
 router.get("/find-all", async (req, res) => {
   try {
     const clients = await Client.findAll({
-      attributes: ['id', 'name', 'rg', 'cpf', 'birthday', 'representativeId', 'isActive'],
       include: [
         {
           model: ClientContact,
-          attributes: ['phone', 'phoneTwo', 'email'],
         },
         {
           model: ClientAddress,
-          attributes: ['cep', 'street', 'number', "complement"],
         },
         {
           model: ClientDependents,
-          attributes: ["id", 'name', 'age'],
         },
         {
           model: ClientSocioeconomicInformation,
-          attributes: ["familyIncome", "acquaintance", "profession"],
         },
       ],
       order: [
