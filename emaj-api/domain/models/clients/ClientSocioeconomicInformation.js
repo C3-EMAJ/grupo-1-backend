@@ -12,6 +12,14 @@ const CientSocioeconomicInformation = db.define('CientSocioeconomicInformation',
         type: DataTypes.FLOAT,
         allowNull: true,
     },
+    profession: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    }, 
+    acquaintance: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    }, 
 },{
     timestamps: true,
 });

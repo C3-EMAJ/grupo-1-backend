@@ -31,10 +31,6 @@ const Client = db.define('Clients', {
         type: DataTypes.DATE,
         allowNull: false,
     },
-    familiar: {
-      type: DataTypes.STRING(150),
-      allowNull: true,
-    },
     representativeId: {
       type: DataTypes.INTEGER,
       allowNull: true,
