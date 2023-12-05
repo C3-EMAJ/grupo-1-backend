@@ -6,6 +6,7 @@ const ClientSocioeconomicInformation = require("./ClientSocioeconomicInformation
 const ClientAddress = require("./ClientAddress.js")
 const ClientContact = require("./ClientContact.js")
 const ClientDependents = require("./ClientDependents.js")
+const ClientDocument = require("./ClientDocument.js")
 
 const Client = db.define('Clients', {
     id: {
@@ -62,6 +63,11 @@ Client.hasOne(ClientContact, { foreignKey: 'idClient', onDelete: 'CASCADE', hook
 // Relacionando o cliente com seus dependentes:
 ClientDependents.belongsTo(Client, { constraint: true, foreignKey: 'idDependents' });
 Client.hasOne(ClientDependents, { foreignKey: 'idClient', onDelete: 'CASCADE', hooks: true  });
+//
+
+// Relacionando o cliente com os seus documentos:
+ClientDocument.belongsTo(Client, { constraint: true, foreignKey: 'idDocument' });
+Client.hasMany(ClientDocument, { foreignKey: 'idClient', onDelete: 'CASCADE', hooks: true  });
 //
 
 module.exports = Client;
